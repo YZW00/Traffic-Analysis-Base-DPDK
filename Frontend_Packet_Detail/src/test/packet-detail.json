@@ -1,0 +1,665 @@
+{
+    "tree": [
+        {
+            "l": "Frame 1: 54 bytes on wire (432 bits), 54 bytes captured (432 bits) on interface \\Device\\NPF_{84426B47-17E2-43DF-BB55-50726CDFE348}, id 0",
+            "h": [
+                0,
+                54
+            ],
+            "t": "proto",
+            "f": "frame",
+            "e": 10849,
+            "n": [
+                {
+                    "l": "Section number: 1",
+                    "f": "frame.section_number == 1"
+                },
+                {
+                    "l": "Interface id: 0 (\\Device\\NPF_{84426B47-17E2-43DF-BB55-50726CDFE348})",
+                    "f": "frame.interface_id == 0",
+                    "e": 10850,
+                    "n": [
+                        {
+                            "l": "Interface name: \\Device\\NPF_{84426B47-17E2-43DF-BB55-50726CDFE348}",
+                            "f": "frame.interface_name == \"\\\\Device\\\\NPF_{84426B47-17E2-43DF-BB55-50726CDFE348}\""
+                        },
+                        {
+                            "l": "Interface description: \u4ee5\u592a\u7f51",
+                            "f": "frame.interface_description == \"\u4ee5\u592a\u7f51\""
+                        }
+                    ]
+                },
+                {
+                    "l": "Encapsulation type: Ethernet (1)",
+                    "f": "frame.encap_type == 1"
+                },
+                {
+                    "l": "Arrival Time: Mar  8, 2023 16:20:34.299845000 \u0439\u05fc\u02b1",
+                    "f": "frame.time == \"2023-03-08 16:20:34.299845+0800\""
+                },
+                {
+                    "l": "Time shift for this packet: 0.000000000 seconds",
+                    "f": "frame.offset_shift == 0.000000000",
+                    "g": true
+                },
+                {
+                    "l": "Epoch Time: 1678263634.299845000 seconds",
+                    "f": "frame.time_epoch == 1678263634.299845000"
+                },
+                {
+                    "l": "Time delta from previous captured frame: 0.000000000 seconds",
+                    "f": "frame.time_delta == 0.000000000",
+                    "g": true
+                },
+                {
+                    "l": "Time delta from previous displayed frame: 0.000000000 seconds",
+                    "f": "frame.time_delta_displayed == 0.000000000",
+                    "g": true
+                },
+                {
+                    "l": "Time since reference or first frame: 0.000000000 seconds",
+                    "f": "frame.time_relative == 0.000000000",
+                    "g": true
+                },
+                {
+                    "l": "Frame Number: 1",
+                    "f": "frame.number == 1"
+                },
+                {
+                    "l": "Frame Length: 54 bytes (432 bits)",
+                    "f": "frame.len == 54"
+                },
+                {
+                    "l": "Capture Length: 54 bytes (432 bits)",
+                    "f": "frame.cap_len == 54"
+                },
+                {
+                    "l": "Frame is marked: False",
+                    "f": "frame.marked == 0",
+                    "g": true
+                },
+                {
+                    "l": "Frame is ignored: False",
+                    "f": "frame.ignored == 0",
+                    "g": true
+                },
+                {
+                    "l": "Protocols in frame: eth:ethertype:ip:tcp",
+                    "f": "frame.protocols == \"eth:ethertype:ip:tcp\"",
+                    "g": true
+                }
+            ]
+        },
+        {
+            "l": "Ethernet II, Src: LCFCHeFe_61:f5:e2 (98:fa:9b:61:f5:e2), Dst: IETF-VRRP-VRID_64 (00:00:5e:00:01:64)",
+            "h": [
+                0,
+                14
+            ],
+            "t": "proto",
+            "f": "eth",
+            "e": 9572,
+            "n": [
+                {
+                    "l": "Destination: IETF-VRRP-VRID_64 (00:00:5e:00:01:64)",
+                    "h": [
+                        0,
+                        6
+                    ],
+                    "f": "eth.dst == 00:00:5e:00:01:64",
+                    "e": 9574,
+                    "n": [
+                        {
+                            "l": "Address: IETF-VRRP-VRID_64 (00:00:5e:00:01:64)",
+                            "h": [
+                                0,
+                                6
+                            ],
+                            "f": "eth.addr == 00:00:5e:00:01:64"
+                        },
+                        {
+                            "l": ".... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)",
+                            "h": [
+                                0,
+                                3
+                            ],
+                            "f": "eth.dst.lg == 0"
+                        },
+                        {
+                            "l": ".... ...0 .... .... .... .... = IG bit: Individual address (unicast)",
+                            "h": [
+                                0,
+                                3
+                            ],
+                            "f": "eth.dst.ig == 0"
+                        }
+                    ]
+                },
+                {
+                    "l": "Source: LCFCHeFe_61:f5:e2 (98:fa:9b:61:f5:e2)",
+                    "h": [
+                        6,
+                        6
+                    ],
+                    "f": "eth.src == 98:fa:9b:61:f5:e2",
+                    "e": 9574,
+                    "n": [
+                        {
+                            "l": "Address: LCFCHeFe_61:f5:e2 (98:fa:9b:61:f5:e2)",
+                            "h": [
+                                6,
+                                6
+                            ],
+                            "f": "eth.addr == 98:fa:9b:61:f5:e2"
+                        },
+                        {
+                            "l": ".... ..0. .... .... .... .... = LG bit: Globally unique address (factory default)",
+                            "h": [
+                                6,
+                                3
+                            ],
+                            "f": "eth.src.lg == 0"
+                        },
+                        {
+                            "l": ".... ...0 .... .... .... .... = IG bit: Individual address (unicast)",
+                            "h": [
+                                6,
+                                3
+                            ],
+                            "f": "eth.src.ig == 0"
+                        }
+                    ]
+                },
+                {
+                    "l": "Type: IPv4 (0x0800)",
+                    "h": [
+                        12,
+                        2
+                    ],
+                    "f": "eth.type == 0x0800"
+                }
+            ]
+        },
+        {
+            "l": "Internet Protocol Version 4, Src: 10.201.4.130, Dst: 23.55.47.98",
+            "h": [
+                14,
+                20
+            ],
+            "t": "proto",
+            "f": "ip",
+            "e": 17449,
+            "n": [
+                {
+                    "l": "0100 .... = Version: 4",
+                    "h": [
+                        14,
+                        1
+                    ],
+                    "f": "ip.version == 4"
+                },
+                {
+                    "l": ".... 0101 = Header Length: 20 bytes (5)",
+                    "h": [
+                        14,
+                        1
+                    ],
+                    "f": "ip.hdr_len == 20"
+                },
+                {
+                    "l": "Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)",
+                    "h": [
+                        15,
+                        1
+                    ],
+                    "f": "ip.dsfield == 0x00",
+                    "e": 17450,
+                    "n": [
+                        {
+                            "l": "0000 00.. = Differentiated Services Codepoint: Default (0)",
+                            "h": [
+                                15,
+                                1
+                            ],
+                            "f": "ip.dsfield.dscp == 0"
+                        },
+                        {
+                            "l": ".... ..00 = Explicit Congestion Notification: Not ECN-Capable Transport (0)",
+                            "h": [
+                                15,
+                                1
+                            ],
+                            "f": "ip.dsfield.ecn == 0"
+                        }
+                    ]
+                },
+                {
+                    "l": "Total Length: 40",
+                    "h": [
+                        16,
+                        2
+                    ],
+                    "f": "ip.len == 40"
+                },
+                {
+                    "l": "Identification: 0xa219 (41497)",
+                    "h": [
+                        18,
+                        2
+                    ],
+                    "f": "ip.id == 0xa219"
+                },
+                {
+                    "l": "010. .... = Flags: 0x2, Don't fragment",
+                    "h": [
+                        20,
+                        1
+                    ],
+                    "f": "ip.flags == 0x2",
+                    "e": 17452,
+                    "n": [
+                        {
+                            "l": "0... .... = Reserved bit: Not set",
+                            "h": [
+                                20,
+                                1
+                            ],
+                            "f": "ip.flags.rb == 0"
+                        },
+                        {
+                            "l": ".1.. .... = Don't fragment: Set",
+                            "h": [
+                                20,
+                                1
+                            ],
+                            "f": "ip.flags.df == 1"
+                        },
+                        {
+                            "l": "..0. .... = More fragments: Not set",
+                            "h": [
+                                20,
+                                1
+                            ],
+                            "f": "ip.flags.mf == 0"
+                        }
+                    ]
+                },
+                {
+                    "l": "...0 0000 0000 0000 = Fragment Offset: 0",
+                    "h": [
+                        20,
+                        2
+                    ],
+                    "f": "ip.frag_offset == 0"
+                },
+                {
+                    "l": "Time to Live: 128",
+                    "h": [
+                        22,
+                        1
+                    ],
+                    "f": "ip.ttl == 128"
+                },
+                {
+                    "l": "Protocol: TCP (6)",
+                    "h": [
+                        23,
+                        1
+                    ],
+                    "f": "ip.proto == 6"
+                },
+                {
+                    "l": "Header Checksum: 0x0000 [validation disabled]",
+                    "h": [
+                        24,
+                        2
+                    ],
+                    "f": "ip.checksum == 0x0000"
+                },
+                {
+                    "l": "Header checksum status: Unverified",
+                    "f": "ip.checksum.status == \"Unverified\"",
+                    "g": true
+                },
+                {
+                    "l": "Source Address: 10.201.4.130",
+                    "h": [
+                        26,
+                        4
+                    ],
+                    "f": "ip.src == 10.201.4.130"
+                },
+                {
+                    "l": "Destination Address: 23.55.47.98",
+                    "h": [
+                        30,
+                        4
+                    ],
+                    "f": "ip.dst == 23.55.47.98"
+                }
+            ]
+        },
+        {
+            "l": "Transmission Control Protocol, Src Port: 53522, Dst Port: 443, Seq: 1, Ack: 1, Len: 0",
+            "h": [
+                34,
+                20
+            ],
+            "t": "proto",
+            "f": "tcp",
+            "s": "Note",
+            "e": 50856,
+            "n": [
+                {
+                    "l": "Source Port: 53522",
+                    "h": [
+                        34,
+                        2
+                    ],
+                    "f": "tcp.srcport == 53522"
+                },
+                {
+                    "l": "Destination Port: 443",
+                    "h": [
+                        36,
+                        2
+                    ],
+                    "f": "tcp.dstport == 443"
+                },
+                {
+                    "l": "Stream index: 0",
+                    "f": "tcp.stream == 0",
+                    "g": true
+                },
+                {
+                    "l": "Conversation completeness: Incomplete (4)",
+                    "f": "tcp.completeness == 4",
+                    "g": true
+                },
+                {
+                    "l": "TCP Segment Len: 0",
+                    "h": [
+                        46,
+                        1
+                    ],
+                    "f": "tcp.len == 0",
+                    "g": true
+                },
+                {
+                    "l": "Sequence Number: 1    (relative sequence number)",
+                    "h": [
+                        38,
+                        4
+                    ],
+                    "f": "tcp.seq == 1"
+                },
+                {
+                    "l": "Sequence Number (raw): 3690511808",
+                    "h": [
+                        38,
+                        4
+                    ],
+                    "f": "tcp.seq_raw == 3690511808"
+                },
+                {
+                    "l": "Next Sequence Number: 2    (relative sequence number)",
+                    "f": "tcp.nxtseq == 2",
+                    "g": true
+                },
+                {
+                    "l": "Acknowledgment Number: 1    (relative ack number)",
+                    "h": [
+                        42,
+                        4
+                    ],
+                    "f": "tcp.ack == 1"
+                },
+                {
+                    "l": "Acknowledgment number (raw): 1913355359",
+                    "h": [
+                        42,
+                        4
+                    ],
+                    "f": "tcp.ack_raw == 1913355359"
+                },
+                {
+                    "l": "0101 .... = Header Length: 20 bytes (5)",
+                    "h": [
+                        46,
+                        1
+                    ],
+                    "f": "tcp.hdr_len == 20"
+                },
+                {
+                    "l": "Flags: 0x011 (FIN, ACK)",
+                    "h": [
+                        46,
+                        2
+                    ],
+                    "f": "tcp.flags == 0x011",
+                    "s": "Note",
+                    "e": 50857,
+                    "n": [
+                        {
+                            "l": "000. .... .... = Reserved: Not set",
+                            "h": [
+                                46,
+                                1
+                            ],
+                            "f": "tcp.flags.res == 0"
+                        },
+                        {
+                            "l": "...0 .... .... = Accurate ECN: Not set",
+                            "h": [
+                                46,
+                                1
+                            ],
+                            "f": "tcp.flags.ae == 0"
+                        },
+                        {
+                            "l": ".... 0... .... = Congestion Window Reduced: Not set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.cwr == 0"
+                        },
+                        {
+                            "l": ".... .0.. .... = ECN-Echo: Not set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.ece == 0"
+                        },
+                        {
+                            "l": ".... ..0. .... = Urgent: Not set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.urg == 0"
+                        },
+                        {
+                            "l": ".... ...1 .... = Acknowledgment: Set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.ack == 1"
+                        },
+                        {
+                            "l": ".... .... 0... = Push: Not set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.push == 0"
+                        },
+                        {
+                            "l": ".... .... .0.. = Reset: Not set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.reset == 0"
+                        },
+                        {
+                            "l": ".... .... ..0. = Syn: Not set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.syn == 0"
+                        },
+                        {
+                            "l": ".... .... ...1 = Fin: Set",
+                            "h": [
+                                47,
+                                1
+                            ],
+                            "f": "tcp.flags.fin == 1",
+                            "s": "Chat",
+                            "e": 58392,
+                            "n": [
+                                {
+                                    "l": "Expert Info (Chat/Sequence): Connection finish (FIN)",
+                                    "t": "proto",
+                                    "f": "_ws.expert",
+                                    "g": true,
+                                    "e": 58393,
+                                    "n": [
+                                        {
+                                            "l": "Connection finish (FIN)",
+                                            "f": "tcp.connection.fin",
+                                            "g": true
+                                        },
+                                        {
+                                            "l": "Severity level: Chat",
+                                            "f": "_ws.expert.severity == \"Chat\"",
+                                            "g": true
+                                        },
+                                        {
+                                            "l": "Group: Sequence",
+                                            "f": "_ws.expert.group == \"Sequence\"",
+                                            "g": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "l": "TCP Flags: \u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7A\u00b7\u00b7\u00b7F",
+                            "h": [
+                                46,
+                                2
+                            ],
+                            "f": "tcp.flags.str == \"\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7A\u00b7\u00b7\u00b7F\"",
+                            "g": true,
+                            "s": "Note",
+                            "e": 58392,
+                            "n": [
+                                {
+                                    "l": "Expert Info (Note/Sequence): This frame initiates the connection closing",
+                                    "t": "proto",
+                                    "f": "_ws.expert",
+                                    "g": true,
+                                    "e": 58393,
+                                    "n": [
+                                        {
+                                            "l": "This frame initiates the connection closing",
+                                            "f": "tcp.connection.fin_active",
+                                            "g": true
+                                        },
+                                        {
+                                            "l": "Severity level: Note",
+                                            "f": "_ws.expert.severity == \"Note\"",
+                                            "g": true
+                                        },
+                                        {
+                                            "l": "Group: Sequence",
+                                            "f": "_ws.expert.group == \"Sequence\"",
+                                            "g": true
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "l": "Window: 1022",
+                    "h": [
+                        48,
+                        2
+                    ],
+                    "f": "tcp.window_size_value == 1022"
+                },
+                {
+                    "l": "Calculated window size: 1022",
+                    "h": [
+                        48,
+                        2
+                    ],
+                    "f": "tcp.window_size == 1022",
+                    "g": true
+                },
+                {
+                    "l": "Window size scaling factor: -1 (unknown)",
+                    "h": [
+                        48,
+                        2
+                    ],
+                    "f": "tcp.window_size_scalefactor == -1",
+                    "g": true
+                },
+                {
+                    "l": "Checksum: 0x55fe [unverified]",
+                    "h": [
+                        50,
+                        2
+                    ],
+                    "f": "tcp.checksum == 0x55fe"
+                },
+                {
+                    "l": "Checksum Status: Unverified",
+                    "f": "tcp.checksum.status == \"Unverified\"",
+                    "g": true
+                },
+                {
+                    "l": "Urgent Pointer: 0",
+                    "h": [
+                        52,
+                        2
+                    ],
+                    "f": "tcp.urgent_pointer == 0"
+                },
+                {
+                    "l": "Timestamps",
+                    "f": "text",
+                    "g": true,
+                    "e": 50883,
+                    "n": [
+                        {
+                            "l": "Time since first frame in this TCP stream: 0.000000000 seconds",
+                            "f": "tcp.time_relative == 0.000000000",
+                            "g": true
+                        },
+                        {
+                            "l": "Time since previous frame in this TCP stream: 0.000000000 seconds",
+                            "f": "tcp.time_delta == 0.000000000",
+                            "g": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "bytes": "AABeAAFkmPqbYfXiCABFAAAoohlAAIAGAAAKyQSCFzcvYtESAbvb+L3Acgt8X1ARA/5V/gAA",
+    "fol": [
+        [
+            "TCP",
+            "tcp.stream eq 0"
+        ]
+    ]
+}

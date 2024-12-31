@@ -1,0 +1,128 @@
+[
+    {
+        "c": [
+            "1",
+            "0.000000",
+            "10.201.4.130",
+            "23.55.47.98",
+            "TCP",
+            "54",
+            "53522 \u2192 443 [FIN, ACK] Seq=1 Ack=1 Win=1022 Len=0"
+        ],
+        "num": 1,
+        "bg": "a0a0a0",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "2",
+            "0.000104",
+            "2001:da8:1002:6001::3:f546",
+            "2402:4f00:4002:400::df77:f818",
+            "TCP",
+            "74",
+            "53527 \u2192 443 [FIN, ACK] Seq=1 Ack=1 Win=1028 Len=0"
+        ],
+        "num": 2,
+        "bg": "a0a0a0",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "3",
+            "0.000651",
+            "10.201.4.130",
+            "10.80.128.28",
+            "DNS",
+            "93",
+            "Standard query 0x91b3 A edge-conumer-static.azureedge.net"
+        ],
+        "num": 3,
+        "bg": "daeeff",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "4",
+            "0.000920",
+            "10.201.4.130",
+            "10.80.128.28",
+            "DNS",
+            "93",
+            "Standard query 0x1b0b AAAA edge-conumer-static.azureedge.net"
+        ],
+        "num": 4,
+        "bg": "daeeff",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "5",
+            "0.001505",
+            "10.80.128.28",
+            "10.201.4.130",
+            "DNS",
+            "285",
+            "Standard query response 0x91b3 A edge-conumer-static.azureedge.net CNAME edge-conumer-static.afd.azureedge.net CNAME star-azureedge-prod.trafficmanager.net CNAME shed.dual-low.part-0021.t-0009.fdv2-t-msedge.net CNAME part-0021.t-0009.fdv2-t-msedge.net A 13.107.237.49 A 13.107.238.49"
+        ],
+        "num": 5,
+        "bg": "daeeff",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "6",
+            "0.001505",
+            "10.80.128.28",
+            "10.201.4.130",
+            "DNS",
+            "309",
+            "Standard query response 0x1b0b AAAA edge-conumer-static.azureedge.net CNAME edge-conumer-static.afd.azureedge.net CNAME star-azureedge-prod.trafficmanager.net CNAME shed.dual-low.part-0022.t-0009.fdv2-t-msedge.net CNAME part-0022.t-0009.fdv2-t-msedge.net AAAA 2620:1ec:4f:1::50 AAAA 2620:1ec:4e:1::50"
+        ],
+        "num": 6,
+        "bg": "daeeff",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "7",
+            "0.002403",
+            "2001:da8:1002:6001::3:f546",
+            "2620:1ec:4f:1::50",
+            "TCP",
+            "86",
+            "53553 \u2192 443 [SYN] Seq=0 Win=64800 Len=0 MSS=1440 WS=256 SACK_PERM"
+        ],
+        "num": 7,
+        "bg": "a0a0a0",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "8",
+            "0.055265",
+            "2402:4f00:4002:400::df77:f818",
+            "2001:da8:1002:6001::3:f546",
+            "TCP",
+            "74",
+            "443 \u2192 53527 [ACK] Seq=1 Ack=2 Win=503 Len=0"
+        ],
+        "num": 8,
+        "bg": "e7e6ff",
+        "fg": "12272e"
+    },
+    {
+        "c": [
+            "9",
+            "0.099840",
+            "2620:1ec:4f:1::50",
+            "2001:da8:1002:6001::3:f546",
+            "TCP",
+            "86",
+            "443 \u2192 53553 [SYN, ACK] Seq=0 Ack=1 Win=65535 Len=0 MSS=1400 WS=256 SACK_PERM"
+        ],
+        "num": 9,
+        "bg": "a0a0a0",
+        "fg": "12272e"
+    }
+]

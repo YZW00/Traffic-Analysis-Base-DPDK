@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>main</title>
+        <script src="/static/jquery-3.6.0.min.js" type="text/javascript"></script>
+        <script src="/static/echarts.js" type="text/javascript"></script>
+        <script src="/static/bootstrap-table.min.js" type="text/javascript"></script>
+        <script src="/static/bootstrap-table-treegrid.js" type="text/javascript"></script>
+        <script src="/static/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="/static/jquery.treegrid.min.js" type="text/javascript"></script>
+        <script src="/static/pagination.js" type="text/javascript"></script>
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/css/bootstrap-table.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/jquery.treegrid.css">
+        <link href="/static/css/jquery.dataTables.css" rel="stylesheet">
+        <style>
+            .container .nav {
+                background-image: linear-gradient(to right, rgb(62,135,217),rgb(62,135,217), #fff);
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 40px;
+            }
+
+            .nav:not(.center) {
+                background-image: none;
+                background-color: rgb(62,135,217);
+            }
+
+            ul {
+                position: relative;
+                display: flex;
+            }
+
+            ul li {
+                list-style: none;
+                width: 120px;
+                line-height: 40px;
+                text-align: center;
+            }
+
+            ul li a{
+                font: 18px "Microsoft YaHei";
+                color: white;
+                height: 40px;
+                line-height: 40px;
+                text-align: center;
+                width: 240px;
+            }
+
+            table {
+                cellspacing:0 ;
+                *border-collapse: collapse; /* IE7 and lower */
+                border-spacing: 0;
+                width: 100%;
+            }
+
+            .bordered tr:hover {
+                background: #fbf8e9;
+                -o-transition: all 0.1s ease-in-out;
+                -webkit-transition: all 0.1s ease-in-out;
+                -moz-transition: all 0.1s ease-in-out;
+                -ms-transition: all 0.1s ease-in-out;
+                transition: all 0.1s ease-in-out;
+            }
+    
+            .bordered th {
+                padding: 7px;
+                text-align: center;
+                cellspacing:0;
+            }
+    
+            .bordered td{
+                padding: 7px;
+                text-align: center;
+                cellspacing:0;
+            }
+        
+            .bordered th {
+    
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+                background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+                background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+                background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+                background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+                background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+            }
+
+            .bordered td:first-child, .bordered th:first-child {
+                border-left: none;
+            }
+    
+            .bordered  tr:nth-of-type(2n){background:#FFFFFF;cursor: pointer;}
+
+            .bordered  tr:nth-of-type(2n+1){background:#F7FAFC;cursor: pointer;}
+    
+            .bordered  tbody tr:hover{  background: #fbf8e9;
+                -o-transition: all 0.1s ease-in-out;
+                -webkit-transition: all 0.1s ease-in-out;
+                -moz-transition: all 0.1s ease-in-out;
+                -ms-transition: all 0.1s ease-in-out;
+                transition: all 0.1s ease-in-out;
+            }
+
+            .select {
+                display: inline-block;
+                width: 400px;
+                position: relative;
+                vertical-align: middle;
+                padding: 0;
+                overflow: hidden;
+                background-color: #fff;
+                color: #555;
+                border: 1px solid #aaa;
+                text-shadow: none;
+                border-radius: 4px; 
+                transition: box-shadow 0.25s ease;
+                z-index: 2;
+            }
+ 
+            .select:hover {
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+            }
+ 
+            .select:before {
+                content: "";
+                position: absolute;
+                width: 0;
+                height: 0;
+                border: 10px solid transparent;
+                border-top-color: #ccc;
+                top: 14px;
+                right: 10px;
+                cursor: pointer;
+                z-index: -2;
+            }
+            .select select {
+                cursor: pointer;
+                padding: 10px;
+                width: 100%;
+                border: none;
+                background: transparent;
+                background-image: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+ 
+            .select select:focus {
+                outline: none;
+            }
+
+            .button {
+                    display: inline-block;
+                    border-radius: 4px;
+                    background: transparent;
+                    border: 2px solid #0099CC;
+                    color: #0099CC; 
+                    text-align: center;
+                    font-size: 14px;
+                    padding: 8px;
+                    width: 100px;
+                    cursor: pointer;
+                    margin: 2px;
+                    vertical-align:middle;
+                    margin-left: 10px;
+            }
+          
+            .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            }
+          
+            .button span:after {
+            content: '»';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            }
+          
+            .button:hover {
+            background-color: #008CBA;
+            color: white;
+            }
+
+            .table thead th {
+                font-size: 18px; /* 设置表头单元格的字体大小 */
+            }
+        </style>
+    </head>
+    <body style="margin: 0; padding: 0;">
+            <div class="container" style="margin: 0; padding: 0; width: 100%;">
+            <!-- 导航栏 -->
+            <div class="nav" style="background-color:  rgb(21,78,193) ">
+                <div class="center">
+                    <ul class="nav_lineprinter">
+                        <li style="background-color:  rgb(62, 135, 217) "><a style="color:yellow" href="javascript:;">概要</a></li>
+                        <li><a href="javascript:;">数据包</a></li>
+                        <li><a href="javascript:;">物理端点</a></li>
+                        <li><a href="javascript:;">IP端点</a></li>
+                        <li><a href="javascript:;">物理会话</a></li>
+                        <li><a href="javascript:;">IP会话</a></li>
+                        <li><a href="javascript:;">协议</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content">
+                <div style="display: block;" id="outline">
+                    <div id="packet_length" style="width: 80%; height: 600px; margin: auto; margin-top: 20px;"></div>  
+                    <div id="outline_content"></div>
+                </div>
+                <div style="display: block; height: 0; overflow: hidden;" id="packet_info"></div>
+                <div style="display: none;" id="ether_point"></div>
+                <div style="display: none;" id="ip_point"></div>
+                <div style="display: none;" id="ether_conv"></div>
+                <div style="display: none;" id="ip_conv"></div>
+                <table style="display: none;table-layout: fixed;word-break: break-all;" id="proto" class="table table-striped"></table>
+            </div>
+        </div>
+    </body>
+    <script type="module" src="/src/main.js"></script>
+    <script type="text/javascript">
+        function MyColor() {
+            this.TextColor = 'FFFFFF';
+            this.Color = 'FF0000';
+        }
+
+        var ColorMaker = {
+            // 最大支持颜色种类数
+            TotalColors: 300,
+            // 获取颜色 seed:颜色种子(任意int)
+            GetColor: (seed = 0) => {
+                var ret = new MyColor();
+                // 计算对应下标
+                var idx = seed % ColorMaker.TotalColors;
+                // 计算颜色
+                var colorVal = ColorMaker._CalColor(idx);
+                // 转成RGB 16进制字符串
+                ret.Color = colorVal.toString(16).padStart(6, '0');
+                // 计算互补色
+                ret.TextColor = ColorMaker._CalTextColor(ret.Color);
+
+                return ret;
+            },
+
+            _CalColor: (idx = 0) => {
+                // 默认返回红色
+                var ret = 0xFF0000;
+                // RGB的最大值
+                var full = 0xFFFFFF;
+                // 总共需要支持多少种颜色，若传0则取255
+                var total = ColorMaker.TotalColors > 0 ? ColorMaker.TotalColors : 0xFF;
+                // 将所有颜色平均分成x份
+                var perVal = full / total;
+                if (idx >= 0 && idx <= total) {
+                    ret = perVal * idx;
+                }
+                ret = Math.round(ret);
+                return ret;
+            },
+
+            // 计算传入颜色的互补色
+            _CalTextColor: (input = '') => {
+                var R = input.substr(0, 2);
+                var G = input.substr(2, 2);
+                var B = input.substr(4, 2);
+                var rVal = parseInt(R, 16);
+                var gVal = parseInt(G, 16);
+                var bVal = parseInt(B, 16);
+                var hsl = rgbToHsl(rVal, gVal, bVal);
+
+                hsl.L = (hsl.L + 0.5) % 1.0;
+                var rgb = hslToRgb(hsl.H, hsl.S, hsl.L);
+                var ret = (rgb.R << 16) + (rgb.G << 8) + rgb.B;
+                return ret.toString(16).padStart(6, '0');
+            }
+        };
+
+        /**
+         * RGB 颜色值转换为 HSL.
+         * 转换公式参考自 http://en.wikipedia.org/wiki/HSL_color_space.
+         * r, g, 和 b 需要在 [0, 255] 范围内
+         * 返回的 h, s, 和 l 在 [0, 1] 之间
+         *
+         * @param   Number  r       红色色值
+         * @param   Number  g       绿色色值
+         * @param   Number  b       蓝色色值
+         * @return  Array           HSL各值数组
+         */
+        function rgbToHsl(r, g, b) {
+            r /= 255, g /= 255, b /= 255;
+            var max = Math.max(r, g, b), min = Math.min(r, g, b);
+            var h, s, l = (max + min) / 2;
+            if (max == min) {
+                h = s = 0; // achromatic
+            } else {
+                var d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return { H: h, S: s, L: l };
+        }
+
+        /**
+         * HSL颜色值转换为RGB.
+         * 换算公式改编自 http://en.wikipedia.org/wiki/HSL_color_space.
+         * h, s, 和 l 设定在 [0, 1] 之间
+         * 返回的 r, g, 和 b 在 [0, 255]之间
+         *
+         * @param   Number  h       色相
+         * @param   Number  s       饱和度
+         * @param   Number  l       亮度
+         * @return  Array           RGB色值数值
+         */
+        function hslToRgb(h, s, l) {
+            var r, g, b;
+            if (s == 0) {
+                r = g = b = l; // achromatic
+            } else {
+                var hue2rgb = function hue2rgb(p, q, t) {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                }
+                var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                var p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+            return { R: Math.round(r * 255), G: Math.round(g * 255), B: Math.round(b * 255) };
+        }
+
+        ColorMaker.TotalColors = 13;
+        var Sum = 100;
+        function bytesFormatter(value, row, index){
+            var percentValue = (parseInt(value)/Sum).toFixed(5)*100;
+            if(percentValue < 1.0)
+            {
+                percentValue = 0.0;
+            }
+            var myColor = ColorMaker.GetColor(index);
+            var innerDiv = '<div style="float: left; text-align:center; width:200px;">'+value+'Bytes：</div>'+
+                    '<div style="width: 250px;height: 25px;border-radius: 5px;background: #c4c1c1; float: left;">'+
+                        '<div style="height: inherit; border-radius:5px 0 0 5px; background: #'+myColor.Color+'; width: '+percentValue+'%;"></div>'+
+                    '</div>';
+            return innerDiv;
+        }
+    </script>
+
+    <script type="text/javascript">
+        function drawChart(frame_num, average_len, min_len, max_len, rate){
+            var myChart = echarts.init(document.getElementById('packet_length'));
+            var lengths = ['所有数据包', '0-19','20-39','40-79','80-159','160-319','320-639','640-1279','1280-2559','2560-5119','5120以上'];
+            var colors = ['#FD2446','#248EFD','#C916F2','#90EE90','#FFA500'];
+            var option = {
+                color:colors,
+                title: {
+                    text: '数据包大小分布'
+                },
+                tooltip: {},
+                legend: {
+                    show: true,//是否显示图例
+                    data:['报文数','平均长度','最小长度', '最大长度', '每毫秒平均数据包数(e-3)'],//图例需要与series的name一一对应
+                    selectedMode: true,//图例的点击事件
+                    orient: 'horizontal',//设置布局为水平
+                    icon:"roundRect",//图形部分的形状
+                },
+                xAxis: {
+                    data:lengths,   
+                },
+                yAxis: {},
+                toolbox:{//工具栏
+                    show:true,
+                    orient: 'horizontal',
+                    showTitle: true,
+                    feature:{
+                        magicType: {
+                            type: ['line', 'bar']
+                        },
+                    }
+                },
+                series: [{
+                        name:'报文数',
+                        type:'bar',
+                        barMaxWidth:'15%',
+                        label:{
+                            normal:{
+                                show:true,
+                                position:'top',
+                                offset:[0, 0]
+                            }
+                    },
+                    data:frame_num
+                    },
+                    {
+                        name:'平均长度',
+                        type:'bar',
+                        barMaxWidth:'15%',
+                        label:{
+                            normal:{
+                                show:true,
+                                position:'top',
+                                offset:[0, 0]
+                            }
+                        },
+                        data:average_len
+                    },
+                    {
+                        name:'最小长度',
+                        type:'bar',
+                        barMaxWidth:'15%',
+                        label:{
+                            normal:{
+                                show:true,
+                                position:'top',
+                                offset:[0, 0]
+                            }
+                        },
+                        data:min_len
+                    },
+                    {
+                        name:'最大长度',
+                        type:'bar',
+                        barMaxWidth:'15%',
+                        label:{
+                            normal:{
+                                show:true,
+                                position:'top',
+                                offset:[0, 0]
+                            }
+                        },
+                        data:max_len
+                    },
+                    {
+                        name:'每毫秒平均数据包数(e-3)',
+                        type:'bar',
+                        barMaxWidth:'15%',
+                        label:{
+                            normal:{
+                                show:true,
+                                position:'top',
+                                offset:[0, 0]
+                            }
+                        },
+                        data:rate.map(item=>(item*1000).toFixed(2))
+                    }]
+            };
+            myChart.setOption(option);
+        };
+
+        $(document).ready(function(){
+            const params = new URLSearchParams(document.location.search)
+            let file_path
+            if(params.get('realTime')){
+                file_path = '/home/【User】/etadp_backend/pcaps/output-20241122-162502_01_000.pcap'
+                document.getElementById('packet_info').style.height='auto'
+            }else{
+                file_path = params.get('file')
+            }
+
+            var divElement = document.querySelector('.center');
+            if(params.get('realTime')){
+                divElement.style.display = 'none';
+            }else{
+                divElement.style.display = 'block';
+            }
+
+            var divElement2 = document.querySelector('#outline');
+            if(params.get('realTime')){
+                divElement2.style.display = 'none';
+                const content = document.getElementById('packet_info');
+                const parent = content[0].parentNode;
+                parent.insertBefore(content[0], parent.firstChild);
+            }
+
+            // const file_path = params.get('file')
+            // var file_path = '{{ file }}';
+            loadState('加载中...', -1, true)
+            $.getJSON('/nmas/statistic_result/',{file: file_path},function(ret){
+                loadState('加载中...', -1, false)
+                //概要页长度分布图
+                var frame_num = ret[1].frame_num;
+                var average_len = ret[1].average_len;
+                var min_len = ret[1].min_len;
+                var max_len = ret[1].max_len; 
+                var rate = ret[1].rate;
+                console.time('drawChart')
+                drawChart(frame_num, average_len, min_len, max_len, rate);
+                console.timeEnd('drawChart')
+
+                //概要页统计信息表
+                var outline_content = document.getElementById("outline_content");
+                var tHead = ["标识","值"];
+                var filed = ret[0].filed;
+                var value = ret[0].value;
+                var tData = [filed, value];
+                var data_len = value.length;
+                console.time('drawTable-outline_content')
+                drawTable(outline_content, tHead, tData, data_len, false, 0, null);
+                console.timeEnd('drawTable-outline_content')
+
+                //物理端点
+                var ether_point = document.getElementById("ether_point");
+                var tHead_ethPoint = ret[2].filed;
+                var tData_ethPoint = ret[2].data;
+                var data_len_ethPoint = ret[2].data[0].length;
+                console.time('drawTable-ether_point')
+                drawTable(ether_point, tHead_ethPoint, tData_ethPoint, data_len_ethPoint, false, 0, null);
+                console.timeEnd('drawTable-ether_point')
+
+                //IP端点
+                var ip_point = document.getElementById("ip_point");
+                var pageNum_ip_endpoints = ret[3]
+                console.time('drawTable-ip_point')
+                drawTable(ip_point, null, null, null, true, parseInt(pageNum_ip_endpoints), file_path);
+                console.timeEnd('drawTable-ip_point')
+
+                //物理会话
+                var ether_conv = document.getElementById("ether_conv");
+                var tHead_ethConv = ret[4].filed;
+                var tData_ethConv = ret[4].data;
+                var data_len_ethConv = ret[4].data[0].length;
+                console.time('drawTable-ether_conv')
+                drawTable(ether_conv, tHead_ethConv, tData_ethConv, data_len_ethConv, false, 0, null);
+                console.timeEnd('drawTable-ether_conv')
+
+                //IP会话
+                var ip_conv = document.getElementById("ip_conv");
+                var pageNum_ip_conv = ret[5];
+                console.time('drawTable-ip_conv')
+                drawTable(ip_conv, null, null, 0, true, parseInt(pageNum_ip_conv), file_path);
+                console.timeEnd('drawTable-ip_conv')
+
+                //协议
+                Sum = parseInt(ret[6][0].bytes);
+                $('#proto').bootstrapTable({
+                    data:ret[6],
+                    idField: 'id',
+                    dataType:'jsonp',
+                    columns: [
+                        { field: 'proto', halign:"center", valign: 'middle', width:300, title: '协议名称' },
+                    // {field: 'id', title: '编号', sortable: true, align: 'center'},
+                    // {field: 'pid', title: '所属上级'},
+                    // sortable: true表示该列可排序
+                    // formatter为function类型，四个参数(value,row,index,field)：表示data中分配的值，所在行的数据(可访问行内其它field)，索引，对应的field
+                        // { field: 'status',  title: '状态', sortable: true,  align: 'center', formatter: 'statusFormatter'  },
+                        { field:'bytes', title:'字节数', valign: 'middle', sortable: true, halign:"center", formatter:'bytesFormatter' },
+                        { field: 'frame_num', align:"center",valign: 'middle',  halign:"center", title: '报文数', width:300}
+                    ],
+
+                    //在哪一列展开树形
+                    treeShowField: 'proto',
+                    //指定父id列
+                    parentIdField: 'pid',
+        
+                    onResetView: function() {
+                        
+                        $('#proto').treegrid({
+                            // initialState: 'collapsed',// 所有节点都折叠
+                            initialState: 'expanded',// 所有节点都展开，默认展开
+                            treeColumn: 0,
+                            // expanderExpandedClass: 'glyphicon glyphicon-minus',  //图标样式
+                            // expanderCollapsedClass: 'glyphicon glyphicon-plus',
+                            onChange: function() {
+                                $('#proto').bootstrapTable('resetWidth');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        //导航栏点击
+        // var lis=document.querySelector('ul').querySelectorAll('li');
+        // var index_name = ["outline", "packet_info", "ether_point", "ip_point", "ether_conv", "ip_conv", "proto"]
+        
+        // for(var i=0;i<lis.length;i++){
+        //     lis[i].setAttribute('index',i);
+        //     lis[i].onclick=function(){
+        //         $(this).css("background","rgb(8, 89, 181)");
+        //         $(this).siblings(".nav_lineprinter>li").css("background","");
+        //         $(this).children().css("color","yellow");
+        //         $(this).siblings().children().css("color","");
+        //         var index = $(this).index();
+        //         for(var i=0;i<index_name.length;i++){
+        //             document.getElementById(index_name[i]).style.display='none';
+        //         }
+        //         document.getElementById(index_name[index]).style.display='block';
+        //         if (index_name[index]=='packet_info') {
+        //             document.getElementById(index_name[index]).style.height='auto'
+        //         }
+        //     }
+        // }
+
+        //导航栏点击
+        var lis=document.querySelector('ul').querySelectorAll('li');
+        var index_name = ["outline", "packet_info", "ether_point", "ip_point", "ether_conv", "ip_conv", "proto"]
+        for(var i=0;i<lis.length;i++){
+            lis[i].setAttribute('index',i);
+            lis[i].onclick=function(){
+                $(this).css("background","rgb(8, 89, 181)");
+                $(this).siblings(".nav_lineprinter>li").css("background","");
+                $(this).children().css("color","yellow");
+                $(this).siblings().children().css("color","");
+                var index = $(this).index();
+                for(var i=0;i<index_name.length;i++){
+                    document.getElementById(index_name[i]).style.display='none';
+                }
+                document.getElementById(index_name[index]).style.display='block';
+                if (index_name[index]=='packet_info') {
+                    document.getElementById(index_name[index]).style.height='auto'
+                }
+            }
+        }
+    </script>
+</html>
+

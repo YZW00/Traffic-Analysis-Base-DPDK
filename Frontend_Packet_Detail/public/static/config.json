@@ -1,0 +1,10 @@
+{
+    "disableAutoScroll": false,
+    "autoScrollStep": 1,
+    "autoScrollDelay": 200,
+    "maxFileNum": 2,
+    "filterOldFileInRealTime": false,
+    "allowRealTimeFilter": false,
+    "pid": [0.01, 0.1, 0],
+    "sendCloseRequest": true
+}

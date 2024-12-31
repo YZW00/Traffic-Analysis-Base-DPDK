@@ -1,0 +1,20 @@
+:root {
+    min-height: 100vh;
+    font-size: 12px;
+    font-family: var(--font-family);
+    color: var(--text-color);
+    background: var(--surface-ground);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+
+    --font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}

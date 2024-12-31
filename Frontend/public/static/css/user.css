@@ -1,0 +1,20 @@
+#userinfo {
+  text-align: left;
+}
+ul[id="attribute"] {
+  text-align: left;
+  list-style:none;
+  padding:0%;
+}
+ul[id="value"] {
+  text-align: left;
+  list-style:none;
+}
+.upload-container {
+  float: left;
+}
+label[id="attr"] {
+  width: 100px;
+  display: inline-block;
+  text-align: right;
+}

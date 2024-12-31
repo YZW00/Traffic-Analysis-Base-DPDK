@@ -1,0 +1,27 @@
+{
+  "name": "webshark",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "push": "npm run build && scp -r dist/* 【User】@【Your_ip_addr_main】:/home/【User】/xzm/dist/packet_info/"
+  },
+  "dependencies": {
+    "@goodtools/wiregasm": "^1.2.0",
+    "isomorphic-ws": "^5.0.0",
+    "primeflex": "^3.3.0",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.28.0",
+    "vue": "^3.2.47",
+    "vue-virtual-scroller": "^2.0.0-beta.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-legacy": "^4.0.3",
+    "@vitejs/plugin-vue": "^4.1.0",
+    "terser": "^5.17.2",
+    "vite": "^4.3.2"
+  }
+}
