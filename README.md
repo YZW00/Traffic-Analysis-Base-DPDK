@@ -13,3 +13,6 @@
 
 ## 使用方法
 将所有文件中“【】”标记处修改为需要的信息，将所有内容部署到主服务器和子服务器后即可使用。
+
+## 效果展示
+![image](https://github.com/Battlingboy/Traffic-Analysis-Base-DPDK/blob/main/pre.GIF)
