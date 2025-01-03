@@ -16,7 +16,7 @@ Vue.prototype.$axios = axios
 Vue.use(ElementUI)
 
 window._AMapSecurityConfig = {
-  securityJsCode: 'd2b65bf7585d652c5abf203afffa6eda'
+  securityJsCode: '【security_code】'
 };
 
 /* eslint-disable no-new */
