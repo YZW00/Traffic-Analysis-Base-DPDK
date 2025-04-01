@@ -36,21 +36,21 @@ jobs:
     steps:
       - name: Prepare environment
         id: prepare
-        run: |
+        run: make test
           [ -d build/ ] && rm -rf build/* || mkdir -p build
           make init -C tests
       - name: CMake
         id: cmake
-        run: |
+        run: make test 
       - name: Make
-        run: |
+        run: make test
       # 单元测试（保持原有分割逻辑）
       - name: CTest
-        run: |
+        run: make test
           ctest -j $(($(nproc)/2+1)) --timeout 400 -LE segment_id_test
           ctest -j $(($(nproc)/2+1)) --timeout 400 -L segment_id_test
       - name: Setup cluster
-        run: |
+        run: make test
       # 集成测试（保留所有类型）
       - name: Pytest
         run: make test  # 保持参数不变
@@ -64,13 +64,13 @@ jobs:
         run: make ldbc  # 参数不变
 
       - name: Down cluster
-        run: |
+        run: make test
         
       - name: coverage
-        run: |
+        run: make test
       - name: Sanitizer
         if: ${{ always() }}
-        run: |
+        run: make test
       - name: Upload Logs
         uses: actions/upload-artifact@v4
         if: ${{ failure() }}
