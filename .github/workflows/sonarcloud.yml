@@ -1,20 +1,13 @@
 name: pull_request
 on:
-  # 添加push事件触发器
   push:
-    branches:
-      - master
-      - 'release-**'
+    branches: ["main"]
   pull_request:
-    types: [synchronize, reopened, labeled]
-    branches:
-      - master
-      - 'release-**'
+    branches: ["main"]
 
-concurrency:
-  # 适配两种事件的并发控制
-  group: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   lint:
