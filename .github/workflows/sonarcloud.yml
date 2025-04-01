@@ -12,7 +12,8 @@ permissions:
 jobs:
   build:
     name: build
-    runs-on: [self-hosted, nebula, linux] 
+    # 临时修改为 GitHub 托管的运行器，例如 ubuntu-latest
+    runs-on: ubuntu-latest 
     strategy:
       fail-fast: false
       matrix:
@@ -113,4 +114,4 @@ jobs:
           name: ${{ matrix.os }}-${{ matrix.compiler }}-logs
           path: |
             ./build/server_*/logs/
-            ./tests/logs/
+            ./tests/logs/    
