@@ -1,4 +1,4 @@
-name: pull_request
+ame: pull_request
 on:
   push:
     branches: ["main"]
@@ -12,8 +12,7 @@ permissions:
 jobs:
   build:
     name: build
-    # 临时修改为 GitHub 托管的运行器，例如 ubuntu-latest
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -34,11 +33,6 @@ jobs:
             required: false
 
     steps:
-      - name: Prepare environment
-        id: prepare
-        run: |
-          [ -d build/ ] && rm -rf build/* || mkdir -p build
-
       - name: CMake
         id: cmake
         run: |
@@ -62,6 +56,10 @@ jobs:
               -GNinja -B build
             ;;
           esac
+
+      - name: Make
+        run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 make
+        working-directory: build/  
 
       - name: Make
         run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 make
