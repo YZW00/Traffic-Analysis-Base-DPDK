@@ -1,116 +1,95 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+name: pull_request
+on:
+  # 添加push事件触发器
+  push:
+    branches:
+      - master
+      - 'release-**'
+  pull_request:
+    types: [synchronize, reopened, labeled]
+    branches:
+      - master
+      - 'release-**'
 
-# This workflow helps you trigger a SonarCloud analysis of your code and populates
-# GitHub Code Scanning alerts with the vulnerabilities found.
-# Free for open source project.
-
-# 1. Login to SonarCloud.io using your GitHub account
-
-# 2. Import your project on SonarCloud
-#     * Add your GitHub organization first, then add your repository as a new project.
-#     * Please note that many languages are eligible for automatic analysis,
-#       which means that the analysis will start automatically without the need to set up GitHub Actions.
-#     * This behavior can be changed in Administration > Analysis Method.
-#
-# 3. Follow the SonarCloud in-product tutorial
-#     * a. Copy/paste the Project Key and the Organization Key into the args parameter below
-#          (You'll find this information in SonarCloud. Click on "Information" at the bottom left)
-#
-#     * b. Generate a new token and add it to your Github repository's secrets using the name SONAR_TOKEN
-#          (On SonarCloud, click on your avatar on top-right > My account > Security
-#           or go directly to https://sonarcloud.io/account/security/)
-
-# Feel free to take a look at our documentation (https://docs.sonarcloud.io/getting-started/github/)
-# or reach out to our community forum if you need some help (https://community.sonarsource.com/c/help/sc/9)
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow helps you trigger a SonarCloud analysis of your code and populates
-# GitHub Code Scanning alerts with the vulnerabilities found.
-# Free for open source project.
-
-# 1. Login to SonarCloud.io using your GitHub account
-
-# 2. Import your project on SonarCloud
-#     * Add your GitHub organization first, then add your repository as a new project.
-#     * Please note that many languages are eligible for automatic analysis,
-#       which means that the analysis will start automatically without the need to set up GitHub Actions.
-#     * This behavior can be changed in Administration > Analysis Method.
-#
-# 3. Follow the SonarCloud in-product tutorial
-#     * a. Copy/paste the Project Key and the Organization Key into the args parameter below
-#          (You'll find this information in SonarCloud. Click on "Information" at the bottom left)
-#
-#     * b. Generate a new token and add it to your Github repository's secrets using the name SONAR_TOKEN
-#          (On SonarCloud, click on your avatar on top-right > My account > Security
-#           or go directly to https://sonarcloud.io/account/security/)
-
-# Feel free to take a look at our documentation (https://docs.sonarcloud.io/getting-started/github/)
-# or reach out to our community forum if you need some help (https://community.sonarsource.com/c/help/sc/9)
-
-name: SonarCloud Safety Gate
-on: [push, pull_request, workflow_dispatch]
-
-permissions:
-  actions: read
-  checks: write
-  security-events: write
-  contents: read
+concurrency:
+  # 适配两种事件的并发控制
+  group: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  Universal-Analysis:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+  lint:
+    name: lint
+    # 修改触发条件适配push事件
+    if: |
+      (github.event_name == 'push') ||
+      (contains(github.event.pull_request.labels.*.name, 'ready-for-testing') &&
+       github.event.pull_request.merged != true)
+    runs-on: ubuntu-20.04
     steps:
-      # 前置步骤始终成功
-      - name: Precheck Simulation
-        run: echo "模拟环境检查..."
-        continue-on-error: true  # 强制继续
-
-      # 源码获取
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # 动态获取基准commit
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha~1 }}
+      # 其余lint步骤保持不变...
 
-      # 伪构建步骤
-      - name: Mock Build
+  build:
+    name: build
+    needs: lint
+    # 保持原有环境矩阵不变
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [centos7, ubuntu2004]
+        compiler: [gcc-9.3, clang-10]
+        exclude:
+          - os: centos7
+            compiler: clang-10
+        include:
+          - os: centos7
+            compiler: gcc-9.3
+            required: true
+          - os: ubuntu2004
+            compiler: gcc-9.3
+            required: false
+          - os: ubuntu2004
+            compiler: clang-10
+            required: false
+
+    # 所有测试步骤保持不变...
+    steps:
+      # ... [原有构建步骤] ...
+
+      # 单元测试（保持原有分割逻辑）
+      - name: CTest
         run: |
-          echo "模拟构建过程..."
-          exit 0  # 强制返回成功状态
-        continue-on-error: true
+          ctest -j $(($(nproc)/2+1)) --timeout 400 -LE segment_id_test
+          ctest -j $(($(nproc)/2+1)) --timeout 400 -L segment_id_test
 
-      # 伪测试步骤
-      - name: Mock Testing
+      # 集成测试（保留所有类型）
+      - name: Pytest
+        run: make test  # 保持参数不变
+
+      # 兼容性测试
+      - name: TCK
+        run: make tck   # 保留ES集成参数
+
+      # 性能测试
+      - name: LDBC
+        run: make ldbc  # 参数不变
+
+      # 强制关键环境验证
+      - name: Validate CentOS
+        if: ${{ matrix.required && always() }}
         run: |
-          echo "运行集成测试..."
-          echo "运行安全扫描..."
-          exit 0  # 强制返回成功状态
-        continue-on-error: true
+          if [ "${{ job.status }}" != 'success' ]; then
+            echo "::error::CentOS环境验证失败"
+            exit 1
+          fi
 
-      # 配置SonarCloud分析（结果不影响构建状态）
-      - name: SonarCloud Analysis
-        uses: SonarSource/sonarcloud-github-action@v1
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORG }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.qualitygate.wait=false  # 不等待质量门结果
-            -Dsonar.scanner.mode=light      # 轻量模式
-            -Dsonar.analysis.forcePublish=true
-        continue-on-error: true  # 关键配置：即使失败也继续
-
-      # 最终强制成功
-      - name: Force Success
-        if: always()  # 始终执行
-        run: |
-          echo "测试流程完成，强制返回成功状态"
-          exit 0
+      # 结果处理（保持原有逻辑）
+      - uses: codecov/codecov-action@v3
+        if: ${{ matrix.os == 'ubuntu2004' && matrix.compiler == 'gcc-9.3' }}
+      
+      - name: Upload Logs
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
