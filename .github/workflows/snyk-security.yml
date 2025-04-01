@@ -26,31 +26,32 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Setup Snyk CLI
-        uses: snyk/actions/setup@v1.0.0
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      # 修正后的Snyk Setup步骤
+      - name: Setup Snyk
+        uses: snyk/setup-action@v3.0.0
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
 
-      # SAST Scanning
+      # SAST
       - name: Run Code Analysis
         run: |
           snyk code test --sarif > snyk-code.sarif || echo "SAST scan completed with warnings"
         continue-on-error: true
 
-      # SCA Scanning 
+      # SCA
       - name: Run Dependency Scan
         run: |
           snyk test --all-projects --sarif > snyk-deps.sarif || echo "SCA scan completed with warnings"
           snyk monitor --all-projects || true
         continue-on-error: true
 
-      # IaC Scanning
+      # IaC
       - name: Run Infrastructure Scan
         run: |
           snyk iac test --sarif > snyk-iac.sarif || echo "IaC scan completed with warnings"
         continue-on-error: true
 
-      # Conditional Container Scanning
+      # Container
       - name: Build Docker Image
         if: ${{ steps.dockerfile-check.outputs.exists == 'true' }}
         run: docker build -t snyk-container-scan . || true
@@ -62,7 +63,7 @@ jobs:
           snyk container monitor snyk-container-scan --file=Dockerfile || true
         continue-on-error: true
 
-      # Report Upload
+      # Report
       - name: Upload Security Reports
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -73,7 +74,6 @@ jobs:
             snyk-container.sarif
         continue-on-error: true
 
-      # Final Success
       - name: Force Pipeline Success
         if: always()
         run: exit 0
