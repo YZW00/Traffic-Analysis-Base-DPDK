@@ -35,27 +35,8 @@ jobs:
     steps:
       - name: CMake
         id: cmake
-        run: |
-          case "${{ matrix.compiler }}" in
-          gcc-*)
-            cmake \
-              -DCMAKE_CXX_COMPILER=$TOOLSET_GCC_DIR/bin/g++ \
-              -DCMAKE_C_COMPILER=$TOOLSET_GCC_DIR/bin/gcc \
-              -DNEBULA_USE_LINKER=mold \
-              -DCMAKE_BUILD_TYPE=${{ matrix.os == 'centos7' && 'Release' || 'Debug' }} \
-              -DENABLE_TESTING=on \
-              -GNinja -B build
-            ;;
-          clang-*)
-            cmake \
-              -DCMAKE_CXX_COMPILER=$TOOLSET_CLANG_DIR/bin/clang++ \
-              -DCMAKE_C_COMPILER=$TOOLSET_CLANG_DIR/bin/clang \
-              -DNEBULA_USE_LINKER=mold \
-              -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-              -DENABLE_ASAN=on \
-              -GNinja -B build
-            ;;
-          esac
+        run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 cmake
+        working-directory: build/  
 
       - name: Make
         run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 make
