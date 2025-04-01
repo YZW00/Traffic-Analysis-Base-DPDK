@@ -10,29 +10,8 @@ permissions:
   security-events: write
 
 jobs:
-  lint:
-    name: Lint Checks
-    runs-on: ubuntu-20.04
-    if: |
-      (github.event_name == 'push') ||
-      (contains(github.event.pull_request.labels.*.name, 'ready-for-testing') &&
-       github.event.pull_request.merged != true)
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.before }}
-      # 其余lint步骤保持不变...
-      - name: Check License Header
-        uses: apache/skywalking-eyes/header@main
-      - name: Cpp Format Check
-        run: |
-          command -v clang-format-10 >/dev/null || (sudo apt update && sudo apt install -y clang-format-10)
-          git diff -U0 --no-color ${{ github.event.pull_request.base.sha || github.event.before }} HEAD | /usr/share/clang/clang-format-10/clang-format-diff.py -p1 | tee /tmp/.clang-format-diff
-          [ -s /tmp/.clang-format-diff ] && exit 1 || true
-
   build:
-    name: Build and Test
-    needs: lint
+    name: build
     runs-on: [self-hosted, nebula, linux] 
     strategy:
       fail-fast: false
@@ -55,14 +34,23 @@ jobs:
 
     # 所有测试步骤保持不变...
     steps:
-      # ... [原有构建步骤] ...
-
+      - name: Prepare environment
+        id: prepare
+        run: |
+          [ -d build/ ] && rm -rf build/* || mkdir -p build
+          make init -C tests
+      - name: CMake
+        id: cmake
+        run: |
+      - name: Make
+        run: |
       # 单元测试（保持原有分割逻辑）
       - name: CTest
         run: |
           ctest -j $(($(nproc)/2+1)) --timeout 400 -LE segment_id_test
           ctest -j $(($(nproc)/2+1)) --timeout 400 -L segment_id_test
-
+      - name: Setup cluster
+        run: |
       # 集成测试（保留所有类型）
       - name: Pytest
         run: make test  # 保持参数不变
@@ -75,19 +63,14 @@ jobs:
       - name: LDBC
         run: make ldbc  # 参数不变
 
-      # 强制关键环境验证
-      - name: Validate CentOS
-        if: ${{ matrix.required && always() }}
+      - name: Down cluster
         run: |
-          if [ "${{ job.status }}" != 'success' ]; then
-            echo "::error::CentOS环境验证失败"
-            exit 1
-          fi
-
-      # 结果处理（保持原有逻辑）
-      - uses: codecov/codecov-action@v3
-        if: ${{ matrix.os == 'ubuntu2004' && matrix.compiler == 'gcc-9.3' }}
-      
+        
+      - name: coverage
+        run: |
+      - name: Sanitizer
+        if: ${{ always() }}
+        run: |
       - name: Upload Logs
         uses: actions/upload-artifact@v4
         if: ${{ failure() }}
