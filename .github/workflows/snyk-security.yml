@@ -25,13 +25,7 @@ jobs:
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-
-      # 修正后的Snyk Setup步骤
-      - name: Setup Snyk
-        uses: snyk/setup-action@v3.0.0
-        with:
-          snyk-token: ${{ secrets.SNYK_TOKEN }}
-
+          
       # SAST
       - name: Run Code Analysis
         run: |
