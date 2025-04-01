@@ -38,9 +38,8 @@ jobs:
         id: prepare
         run: |
           [ -d build/ ] && rm -rf build/* || mkdir -p build
-          make init -C tests
 
-      - name: CMake configuration
+      - name: CMake
         id: cmake
         run: |
           case "${{ matrix.compiler }}" in
