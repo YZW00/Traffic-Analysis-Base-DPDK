@@ -11,24 +11,29 @@ permissions:
 
 jobs:
   lint:
-    name: lint
-    # 修改触发条件适配push事件
+    name: Lint Checks
+    runs-on: ubuntu-20.04
     if: |
       (github.event_name == 'push') ||
       (contains(github.event.pull_request.labels.*.name, 'ready-for-testing') &&
        github.event.pull_request.merged != true)
-    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
-          # 动态获取基准commit
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha~1 }}
+          ref: ${{ github.event.pull_request.base.sha || github.event.before }}
       # 其余lint步骤保持不变...
+      - name: Check License Header
+        uses: apache/skywalking-eyes/header@main
+      - name: Cpp Format Check
+        run: |
+          command -v clang-format-10 >/dev/null || (sudo apt update && sudo apt install -y clang-format-10)
+          git diff -U0 --no-color ${{ github.event.pull_request.base.sha || github.event.before }} HEAD | /usr/share/clang/clang-format-10/clang-format-diff.py -p1 | tee /tmp/.clang-format-diff
+          [ -s /tmp/.clang-format-diff ] && exit 1 || true
 
   build:
-    name: build
+    name: Build and Test
     needs: lint
-    # 保持原有环境矩阵不变
+    runs-on: [self-hosted, nebula, linux] 
     strategy:
       fail-fast: false
       matrix:
