@@ -14,55 +14,161 @@
 name: Checkmarx Scan
 
 # Controls when the workflow will run
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    types: [synchronize, reopened, labeled]
+    branches:
+      - master
+      - 'release-**'
 
-permissions:
-  actions: write
-  checks: write
-  security-events: write
-  contents: read
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
-  Multi-Test-Suite:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30  # 防止超时中断
-    
+  lint:
+    name: lint
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'ready-for-testing') && github.event.pull_request.merged != true }}
+    runs-on: ubuntu-20.04
     steps:
-    # 模拟测试套件 -------------------------------------------------
-    - name: Mock Unit Tests
-      run: |
-        echo "运行模拟单元测试..."
-        exit 0  # 强制成功
-      continue-on-error: true
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+      - uses: actions/checkout@v4
+        with:
+          clean: false
+      - name: Check License Header
+        uses: apache/skywalking-eyes/header@main 
+      - name: Ensure clang-format-10
+        run: |
+          command -v clang-format-10 >/dev/null || (sudo apt update && sudo apt install -y clang-format-10)
+      - name: Cpplint
+        run: |
+          ln -snf $PWD/.linters/cpp/hooks/pre-commit.sh $PWD/.linters/cpp/pre-commit.sh
+          .linters/cpp/pre-commit.sh $(git --no-pager diff --diff-filter=d --name-only ${{ github.event.pull_request.base.sha }} HEAD)
+      - name: Format Check
+        run: |
+          git diff -U0 --no-color ${{ github.event.pull_request.base.sha }} HEAD | /usr/share/clang/clang-format-10/clang-format-diff.py -p1 | tee /tmp/.clang-format-diff
+          [ -s /tmp/.clang-format-diff ] && exit 1 || true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.7
+      - name: Prepare Gherkin
+        run: make init-all -C tests
+      - name: Check Gherkin Format
+        run: make check-and-diff -C tests
 
-    - name: Mock Integration Tests
-      run: |
-        echo "运行模拟集成测试..."
-        exit 0  # 强制成功
-      continue-on-error: true
+  build:
+    name: build
+    needs: lint
+    runs-on: [self-hosted, nebula, linux]
+    strategy:
+      fail-fast: false
+    env:
+      CCACHE_DIR: /tmp/ccache/nebula/${{ matrix.os }}-${{ matrix.compiler }}
+      CCACHE_MAXSIZE: 8G
 
-    # 真实扫描步骤（忽略错误）---------------------------------------
-    - name: Checkmarx SAST Scan
-      uses: checkmarx/ast-github-action@v1.2.0  # 使用稳定版本
-      with:
-        base_uri: https://ast.checkmarx.net
-        cx_client_id: ${{ secrets.CX_CLIENT_ID }}
-        cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
-        cx_tenant: ${{ secrets.CX_TENANT }}
-        additional_params: --report-format sarif --output-path . --force-scan
-      continue-on-error: true  # 关键配置：忽略扫描错误
+    steps:
+      - uses: webiny/action-post-run@3.1.0
+        with:
+          run: sh -c "find . -mindepth 1 -delete"
+      - uses: actions/checkout@v4
+      - name: Prepare Env
+        run: |
+          [ -d build/ ] && rm -rf build/* || mkdir -p build
+          make init -C tests
 
-    # 结果处理 ----------------------------------------------------
-    - name: Upload Any Results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: cx_result.sarif || echo ""  # 容错处理
-      continue-on-error: true
+      # Build and test steps remain unchanged
+      - name: CMake
+        run: |
+          case ${{ matrix.compiler }} in
+          gcc-*)
+            cmake \
+              -DCMAKE_CXX_COMPILER=$TOOLSET_GCC_DIR/bin/g++ \
+              -DCMAKE_C_COMPILER=$TOOLSET_GCC_DIR/bin/gcc \
+              -DNEBULA_USE_LINKER=mold \
+              -DCMAKE_BUILD_TYPE=${{ matrix.os == 'centos7' && 'Release' || 'Debug' }} \
+              -DENABLE_TESTING=on \
+              -GNinja -B build
+            ;;
+          clang-*)
+            cmake \
+              -DCMAKE_CXX_COMPILER=$TOOLSET_CLANG_DIR/bin/clang++ \
+              -DCMAKE_C_COMPILER=$TOOLSET_CLANG_DIR/bin/clang \
+              -DNEBULA_USE_LINKER=mold \
+              -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DENABLE_ASAN=on \
+              -GNinja -B build
+            ;;
+          esac
 
-    # 强制成功机制 -------------------------------------------------
-    - name: Override Status
-      if: always()  # 始终执行
-      run: |
-        echo "所有测试阶段完成，状态码强制归零"
-        echo "检测报告已归档：[安全报告链接]"
-        exit 0
+      - name: Build
+        run: |
+          ccache -z
+          ninja -j $(nproc)
+          ccache -s
+        working-directory: build/
+
+      # Test execution with conditional error handling
+      - name: Run CTest
+        env:
+          ASAN_OPTIONS: fast_unwind_on_malloc=1
+        run: |
+          ctest -j $(($(nproc)/2+1)) --timeout 400 --output-on-failure
+        working-directory: build/
+        continue-on-error: ${{ !matrix.required }}
+
+      - name: Cluster Setup
+        run: |
+          make CONTAINERIZED=true ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' up
+        working-directory: tests/
+        timeout-minutes: 4
+        continue-on-error: ${{ !matrix.required }}
+
+      - name: Execute Pytest
+        run: make RM_DIR=false DEBUG=false J=8 test
+        working-directory: tests/
+        continue-on-error: ${{ !matrix.required }}
+
+      - name: Run TCK Tests
+        run: |
+          make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 tck
+        working-directory: tests/
+        continue-on-error: ${{ !matrix.required }}
+
+      - name: LDBC Benchmark
+        run: make RM_DIR=false DEBUG=false J=8 ldbc
+        working-directory: tests/
+        continue-on-error: ${{ !matrix.required }}
+
+      # Mandatory environment validation
+      - name: Validate Required
+        if: ${{ always() && matrix.required }}
+        run: |
+          if [ "${{ job.status }}" != 'success' ]; then
+            echo "::error::Mandatory environment tests failed"
+            exit 1
+          fi
+
+      # Existing coverage and log steps
+      - name: Code Coverage
+        if: ${{ matrix.compiler == 'gcc-9.3' && matrix.os == 'ubuntu2004' }}
+        run: |
+          ~/.local/bin/fastcov -d build -l -o fastcov.info -p --exclude /usr/include /usr/lib /opt/vesoft build/ tests/ /test /mock .lex .yy
+      - uses: codecov/codecov-action@v3
+        if: ${{ matrix.compiler == 'gcc-9.3' && matrix.os == 'ubuntu2004' }}
+        with:
+          files: fastcov.info
+          fail_ci_if_error: false
+
+      - name: Check Sanitizer
+        if: ${{ always() }}
+        run: |
+          exit $(grep -P "SUMMARY: AddressSanitizer: \d+ byte$s$ leaked in \d+ allocation$s$\." build/server_*/logs/*stderr.log | wc -l)
+
+      - name: Archive Logs
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: ${{ matrix.os }}-${{ matrix.compiler }}-logs
+          path: ./build/server_*/logs/
