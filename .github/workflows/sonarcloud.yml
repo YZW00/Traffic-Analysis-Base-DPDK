@@ -32,45 +32,85 @@ jobs:
             compiler: clang-10
             required: false
 
-    # 所有测试步骤保持不变...
     steps:
       - name: Prepare environment
         id: prepare
-        run: make test
+        run: |
           [ -d build/ ] && rm -rf build/* || mkdir -p build
           make init -C tests
-      - name: CMake
+
+      - name: CMake configuration
         id: cmake
-        run: make test 
+        run: |
+          case "${{ matrix.compiler }}" in
+          gcc-*)
+            cmake \
+              -DCMAKE_CXX_COMPILER=$TOOLSET_GCC_DIR/bin/g++ \
+              -DCMAKE_C_COMPILER=$TOOLSET_GCC_DIR/bin/gcc \
+              -DNEBULA_USE_LINKER=mold \
+              -DCMAKE_BUILD_TYPE=${{ matrix.os == 'centos7' && 'Release' || 'Debug' }} \
+              -DENABLE_TESTING=on \
+              -GNinja -B build
+            ;;
+          clang-*)
+            cmake \
+              -DCMAKE_CXX_COMPILER=$TOOLSET_CLANG_DIR/bin/clang++ \
+              -DCMAKE_C_COMPILER=$TOOLSET_CLANG_DIR/bin/clang \
+              -DNEBULA_USE_LINKER=mold \
+              -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DENABLE_ASAN=on \
+              -GNinja -B build
+            ;;
+          esac
+
       - name: Make
-        run: make test
-      # 单元测试（保持原有分割逻辑）
-      - name: CTest
-        run: make test
-          ctest -j $(($(nproc)/2+1)) --timeout 400 -LE segment_id_test
-          ctest -j $(($(nproc)/2+1)) --timeout 400 -L segment_id_test
-      - name: Setup cluster
-        run: make test
-      # 集成测试（保留所有类型）
-      - name: Pytest
-        run: make test  # 保持参数不变
-
-      # 兼容性测试
-      - name: TCK
-        run: make tck   # 保留ES集成参数
-
-      # 性能测试
-      - name: LDBC
-        run: make ldbc  # 参数不变
-
-      - name: Down cluster
-        run: make test
+        run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 make
+        working-directory: build/
         
-      - name: coverage
-        run: make test
-      - name: Sanitizer
-        if: ${{ always() }}
-        run: make test
-      - name: Upload Logs
+      - name: Ctest
+        run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 ctest
+        working-directory: tests/
+
+      - name: Setup cluster
+        run: |
+          case "${{ matrix.compiler }}" in
+          gcc-*)
+            case "${{ matrix.os }}" in
+            centos7)
+              make CONTAINERIZED=true ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' up
+              ;;
+            ubuntu2004)
+              make CONTAINERIZED=true ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' ENABLE_SSL=true CA_SIGNED=true up
+              ;;
+            esac
+            ;;
+          clang-*)
+            make CONTAINERIZED=true ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' ENABLE_SSL=false ENABLE_GRAPH_SSL=true up
+            ;;
+          esac
+        working-directory: tests/
+
+      - name: Pytest
+        run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 pytest
+        working-directory: tests/
+
+      - name: TCK
+        run: make RM_DIR=false DEBUG=false ENABLE_FT_INDEX=true ES_ADDRESS='"elasticsearch":9200' J=8 tck
+        working-directory: tests/
+
+      - name: LDBC
+        run: make RM_DIR=false DEBUG=false J=8 ldbc
+        working-directory: tests/
+
+      - name: Tear down cluster
+        run: make RM_DIR=false down
+        working-directory: tests/
+
+      - name: Upload logs
         uses: actions/upload-artifact@v4
         if: ${{ failure() }}
+        with:
+          name: ${{ matrix.os }}-${{ matrix.compiler }}-logs
+          path: |
+            ./build/server_*/logs/
+            ./tests/logs/
